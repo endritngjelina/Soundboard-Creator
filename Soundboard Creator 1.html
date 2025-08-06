@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Soundboard Creator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0078d4;
+            --primary-dark: #106ebe;
+            --secondary: #2b2b2b;
+            --tertiary: #3c3c3c;
+            --background: #1e1e1e;
+            --surface: #252526;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --success: #107c10;
+            --warning: #d83b01;
+            --danger: #e81123;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            --highlight: rgba(255, 255, 255, 0.1);
+            --grid-gap: 12px;
+            --button-size: 100px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--tertiary);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .logo h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            background: linear-gradient(90deg, var(--primary), #4ec9b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 120, 212, 0.1);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #c50f1f;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #0e6b0e;
+        }
+
+        .sidebar {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .panel-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title i {
+            color: var(--primary);
+        }
+
+        .sound-library {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .sound-item {
+            background: var(--tertiary);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .sound-item:hover {
+            background: var(--highlight);
+            transform: translateX(5px);
+        }
+
+        .sound-item.active {
+            border-color: var(--primary);
+            background: rgba(0, 120, 212, 0.15);
+        }
+
+        .sound-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .sound-details {
+            flex: 1;
+        }
+
+        .sound-details h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .sound-details p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .sound-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .sound-actions button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sound-actions button:hover {
+            background: var(--primary);
+        }
+
+        .upload-area {
+            border: 3px dashed var(--tertiary);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            margin: 25px 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(0, 120, 212, 0.05);
+        }
+
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .upload-area h3 {
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .soundboard-area {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 120px);
+        }
+
+        .soundboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .board-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+        }
+
+        .board-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .grid-size-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: var(--tertiary);
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+        }
+
+        .grid-size-controls label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .grid-size-controls input {
+            width: 60px;
+            background: var(--secondary);
+            border: 1px solid var(--tertiary);
+            color: var(--text-primary);
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .soundboard-container {
+            flex: 1;
+            background: var(--secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            overflow: auto;
+            position: relative;
+        }
+
+        .soundboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--grid-gap);
+            min-height: 500px;
+        }
+
+        .sound-button {
+            background: var(--tertiary);
+            border: none;
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 15px;
+            aspect-ratio: 1/1;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .sound-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            background: var(--highlight);
+        }
+
+        .sound-button.playing {
+            animation: pulse 0.5s;
+            box-shadow: 0 0 0 8px rgba(0, 120, 212, 0.5);
+        }
+
+        .sound-button .button-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .sound-button .button-label {
+            font-size: 0.9rem;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            max-height: 2.8em;
+        }
+
+        .sound-button.empty {
+            background: transparent;
+            border: 2px dashed var(--tertiary);
+        }
+
+        .sound-button.empty:hover {
+            border-color: var(--primary);
+            background: rgba(0, 120, 212, 0.05);
+        }
+
+        .sound-button.empty .button-icon {
+            color: var(--text-secondary);
+        }
+
+        .sound-button .delete-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(232, 17, 35, 0.8);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .sound-button:hover .delete-button {
+            opacity: 1;
+        }
+
+        .soundboard-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--tertiary);
+        }
+
+        .layout-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .layout-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .layout-selector select {
+            background: var(--tertiary);
+            border: 1px solid var(--tertiary);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .recording-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--danger);
+            font-weight: 500;
+        }
+
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--danger);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 120, 212, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 12px rgba(0, 120, 212, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 120, 212, 0);
+            }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transform: translateY(-50px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--tertiary);
+            border: 1px solid var(--tertiary);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .soundboard-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .soundboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .soundboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .board-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .soundboard-footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .layout-controls {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-wave-square logo-icon"></i>
+                <h1>Soundboard Creator</h1>
+            </div>
+            <div class="user-controls">
+                <button class="btn btn-outline">
+                    <i class="fas fa-cloud-upload-alt"></i> Export
+                </button>
+                <button class="btn">
+                    <i class="fas fa-save"></i> Save Layout
+                </button>
+            </div>
+        </header>
+        
+        <aside class="sidebar">
+            <div class="panel">
+                <h2 class="panel-title"><i class="fas fa-music"></i> Sound Library</h2>
+                <div class="sound-library">
+                    <div class="sound-item active">
+                        <i class="fas fa-drum sound-icon"></i>
+                        <div class="sound-details">
+                            <h3>Drum Beat</h3>
+                            <p>0:05 • 48KB</p>
+                        </div>
+                        <div class="sound-actions">
+                            <button><i class="fas fa-play"></i></button>
+                            <button><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="sound-item">
+                        <i class="fas fa-guitar sound-icon"></i>
+                        <div class="sound-details">
+                            <h3>Guitar Riff</h3>
+                            <p>0:08 • 72KB</p>
+                        </div>
+                        <div class="sound-actions">
+                            <button><i class="fas fa-play"></i></button>
+                            <button><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="sound-item">
+                        <i class="fas fa-bell sound-icon"></i>
+                        <div class="sound-details">
+                            <h3>Notification</h3>
+                            <p>0:03 • 32KB</p>
+                        </div>
+                        <div class="sound-actions">
+                            <button><i class="fas fa-play"></i></button>
+                            <button><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="sound-item">
+                        <i class="fas fa-laugh sound-icon"></i>
+                        <div class="sound-details">
+                            <h3>Laughter</h3>
+                            <p>0:12 • 112KB</p>
+                        </div>
+                        <div class="sound-actions">
+                            <button><i class="fas fa-play"></i></button>
+                            <button><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="sound-item">
+                        <i class="fas fa-car-crash sound-icon"></i>
+                        <div class="sound-details">
+                            <h3>Car Horn</h3>
+                            <p>0:04 • 42KB</p>
+                        </div>
+                        <div class="sound-actions">
+                            <button><i class="fas fa-play"></i></button>
+                            <button><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Upload Sounds</h3>
+                    <p>Drag & drop files here or click to browse</p>
+                    <input type="file" id="fileInput" accept="audio/*" multiple style="display: none;">
+                </div>
+                
+                <div class="recording-controls">
+                    <button class="btn btn-danger" id="recordButton">
+                        <i class="fas fa-microphone"></i> Record Sound
+                    </button>
+                    <div class="recording-indicator" id="recordingIndicator" style="display: none;">
+                        <div class="pulse-dot"></div>
+                        <span>Recording... 00:15</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="soundboard-area">
+            <div class="soundboard-header">
+                <h2 class="board-title">My Soundboard</h2>
+                <div class="board-controls">
+                    <div class="grid-size-controls">
+                        <label for="gridRows">Rows:</label>
+                        <input type="number" id="gridRows" min="1" max="8" value="4">
+                        <label for="gridCols">Columns:</label>
+                        <input type="number" id="gridCols" min="1" max="8" value="4">
+                    </div>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-palette"></i> Customize
+                    </button>
+                </div>
+            </div>
+            
+            <div class="soundboard-container">
+                <div class="soundboard-grid" id="soundboardGrid">
+                    <!-- Sound buttons will be generated here -->
+                </div>
+            </div>
+            
+            <div class="soundboard-footer">
+                <div class="layout-controls">
+                    <button class="btn btn-outline">
+                        <i class="fas fa-plus"></i> New Layout
+                    </button>
+                    <div class="layout-selector">
+                        <button class="btn btn-outline">
+                            <i class="fas fa-download"></i> Load
+                        </button>
+                        <select>
+                            <option>Default Layout</option>
+                            <option>Gaming Sounds</option>
+                            <option>Podcast Effects</option>
+                            <option>Meeting Sounds</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-success">
+                        <i class="fas fa-share-alt"></i> Share Board
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Edit Sound Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Sound Button</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="soundName">Sound Name</label>
+                    <input type="text" id="soundName" value="Drum Beat">
+                </div>
+                <div class="form-group">
+                    <label for="soundIcon">Icon</label>
+                    <select id="soundIcon">
+                        <option value="fa-drum">Drum</option>
+                        <option value="fa-guitar">Guitar</option>
+                        <option value="fa-bell">Bell</option>
+                        <option value="fa-laugh">Laugh</option>
+                        <option value="fa-car-crash">Car Horn</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="buttonColor">Button Color</label>
+                    <input type="color" id="buttonColor" value="#0078d4">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline close-modal">Cancel</button>
+                <button class="btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Sample sounds data
+        const sampleSounds = [
+            { id: 1, name: "Drum Beat", icon: "fa-drum", color: "#0078d4" },
+            { id: 2, name: "Guitar Riff", icon: "fa-guitar", color: "#e81123" },
+            { id: 3, name: "Notification", icon: "fa-bell", color: "#107c10" },
+            { id: 4, name: "Laughter", icon: "fa-laugh", color: "#d83b01" },
+            { id: 5, name: "Car Horn", icon: "fa-car-crash", color: "#b4009e" }
+        ];
+
+        // DOM elements
+        const soundboardGrid = document.getElementById('soundboardGrid');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const recordButton = document.getElementById('recordButton');
+        const recordingIndicator = document.getElementById('recordingIndicator');
+        const gridRows = document.getElementById('gridRows');
+        const gridCols = document.getElementById('gridCols');
+        const editModal = document.getElementById('editModal');
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+
+        // Initialize soundboard
+        function initializeSoundboard() {
+            createSoundButtons(4, 4);
+            
+            // Add event listeners
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('drop', handleDrop);
+            fileInput.addEventListener('change', handleFileUpload);
+            recordButton.addEventListener('click', toggleRecording);
+            gridRows.addEventListener('change', updateGridSize);
+            gridCols.addEventListener('change', updateGridSize);
+            
+            // Modal events
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    editModal.classList.remove('active');
+                });
+            });
+        }
+
+        // Create sound buttons grid
+        function createSoundButtons(rows, cols) {
+            soundboardGrid.innerHTML = '';
+            soundboardGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            
+            const totalButtons = rows * cols;
+            
+            for (let i = 0; i < totalButtons; i++) {
+                const soundButton = document.createElement('button');
+                soundButton.className = 'sound-button empty';
+                soundButton.innerHTML = `
+                    <i class="fas fa-plus button-icon"></i>
+                    <div class="button-label">Drop Sound Here</div>
+                `;
+                
+                // Add event listeners for drag and drop
+                soundButton.addEventListener('dragover', handleDragOver);
+                soundButton.addEventListener('drop', (e) => handleSoundDrop(e, i));
+                soundButton.addEventListener('click', () => {
+                    if (soundButton.classList.contains('empty')) {
+                        fileInput.click();
+                    } else {
+                        playSound(i);
+                    }
+                });
+                
+                soundboardGrid.appendChild(soundButton);
+            }
+        }
+
+        // Update grid size
+        function updateGridSize() {
+            const rows = parseInt(gridRows.value) || 4;
+            const cols = parseInt(gridCols.value) || 4;
+            createSoundButtons(rows, cols);
+        }
+
+        // Handle drag over event
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            if (e.currentTarget === uploadArea) {
+                uploadArea.classList.add('dragover');
+            }
+        }
+
+        // Handle file drop
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        }
+
+        // Handle file upload
+        function handleFileUpload(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+
+        // Process uploaded files
+        function handleFiles(files) {
+            if (files.length > 0) {
+                // In a real app, you would process and store the files
+                alert(`Successfully uploaded ${files.length} sound file(s)!`);
+                
+                // Add the first sound to the first empty button
+                const emptyButtons = document.querySelectorAll('.sound-button.empty');
+                if (emptyButtons.length > 0) {
+                    const randomSound = sampleSounds[Math.floor(Math.random() * sampleSounds.length)];
+                    assignSoundToButton(emptyButtons[0], randomSound);
+                }
+            }
+        }
+
+        // Assign sound to button
+        function assignSoundToButton(button, sound) {
+            button.classList.remove('empty');
+            button.innerHTML = `
+                <i class="fas ${sound.icon} button-icon"></i>
+                <div class="button-label">${sound.name}</div>
+                <button class="delete-button" title="Remove sound">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            button.style.backgroundColor = sound.color + '30'; // Add opacity
+            
+            // Add delete event listener
+            const deleteButton = button.querySelector('.delete-button');
+            deleteButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                resetButton(button);
+            });
+            
+            // Add edit on double-click
+            button.addEventListener('dblclick', () => {
+                openEditModal(button, sound);
+            });
+        }
+
+        // Reset button to empty state
+        function resetButton(button) {
+            button.classList.add('empty');
+            button.innerHTML = `
+                <i class="fas fa-plus button-icon"></i>
+                <div class="button-label">Drop Sound Here</div>
+            `;
+            button.style.backgroundColor = '';
+        }
+
+        // Handle sound drop on button
+        function handleSoundDrop(e, index) {
+            e.preventDefault();
+            const button = e.currentTarget;
+            
+            // Get the dragged sound (in a real app, this would come from the library)
+            const sound = sampleSounds[Math.floor(Math.random() * sampleSounds.length)];
+            assignSoundToButton(button, sound);
+        }
+
+        // Play sound
+        function playSound(index) {
+            const button = soundboardGrid.children[index];
+            
+            // Add playing effect
+            button.classList.add('playing');
+            
+            // In a real app, this would play the actual sound
+            setTimeout(() => {
+                button.classList.remove('playing');
+            }, 500);
+        }
+
+        // Toggle recording
+        function toggleRecording() {
+            if (recordingIndicator.style.display === 'none') {
+                // Start recording
+                recordingIndicator.style.display = 'flex';
+                recordButton.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
+                recordButton.classList.add('btn-danger');
+                
+                // Start recording timer
+                let seconds = 0;
+                const timer = setInterval(() => {
+                    seconds++;
+                    recordingIndicator.querySelector('span').textContent = `Recording... ${seconds.toString().padStart(2, '0')}`;
+                }, 1000);
+                
+                // Store timer for later clearing
+                recordButton.dataset.timer = timer;
+            } else {
+                // Stop recording
+                recordingIndicator.style.display = 'none';
+                recordButton.innerHTML = '<i class="fas fa-microphone"></i> Record Sound';
+                recordButton.classList.remove('btn-danger');
+                
+                // Stop timer
+                clearInterval(parseInt(recordButton.dataset.timer));
+                
+                // Add recorded sound to library
+                alert('Recording saved! Sound added to your library.');
+                
+                // Add the sound to the first empty button
+                const emptyButtons = document.querySelectorAll('.sound-button.empty');
+                if (emptyButtons.length > 0) {
+                    const newSound = {
+                        id: sampleSounds.length + 1,
+                        name: "My Recording",
+                        icon: "fa-microphone",
+                        color: "#b4009e"
+                    };
+                    assignSoundToButton(emptyButtons[0], newSound);
+                }
+            }
+        }
+
+        // Open edit modal
+        function openEditModal(button, sound) {
+            // Populate modal with current sound data
+            document.getElementById('soundName').value = sound.name;
+            document.getElementById('soundIcon').value = sound.icon;
+            document.getElementById('buttonColor').value = sound.color;
+            
+            // Show modal
+            editModal.classList.add('active');
+            
+            // Handle save changes
+            const saveButton = editModal.querySelector('.btn:not(.close-modal)');
+            saveButton.onclick = function() {
+                // Update sound properties
+                sound.name = document.getElementById('soundName').value;
+                sound.icon = document.getElementById('soundIcon').value;
+                sound.color = document.getElementById('buttonColor').value;
+                
+                // Update button
+                assignSoundToButton(button, sound);
+                
+                // Close modal
+                editModal.classList.remove('active');
+            };
+        }
+
+        // Initialize the app
+        window.addEventListener('DOMContentLoaded', initializeSoundboard);
+    </script>
+</body>
+</html>
