@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Soundboard Creator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/wavesurfer.js@7"></script>
+    <style>
+        :root {
+            --primary: #0078d4;
+            --primary-dark: #106ebe;
+            --secondary: #2b2b2b;
+            --accent: #ffb900;
+            --light: #f3f2f1;
+            --dark: #201f1e;
+            --success: #107c10;
+            --danger: #d13438;
+            --gray: #8a8886;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            grid-gap: 25px;
+            height: calc(100vh - 40px);
+        }
+
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            color: var(--accent);
+            font-size: 32px;
+        }
+
+        .logo h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--gray);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #c12a2e;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #0e6e0e;
+        }
+
+        .sidebar {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--gray);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(0, 120, 212, 0.05);
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .library {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .library-item {
+            background: rgba(50, 50, 50, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: grab;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .library-item:hover {
+            background: rgba(70, 70, 70, 0.7);
+            transform: translateX(5px);
+        }
+
+        .library-item:active {
+            cursor: grabbing;
+        }
+
+        .library-item.active {
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 0 2px rgba(255, 185, 0, 0.3);
+        }
+
+        .library-item-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .library-item-content {
+            flex: 1;
+        }
+
+        .library-item-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .library-item-duration {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .soundboard-container {
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grid-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .grid-size-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .grid-label {
+            font-size: 16px;
+            color: var(--gray);
+        }
+
+        .grid-input {
+            background: rgba(50, 50, 50, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            width: 60px;
+            text-align: center;
+        }
+
+        .soundboard-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 20px;
+            height: 100%;
+        }
+
+        .grid-item {
+            background: rgba(50, 50, 50, 0.5);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .grid-item:hover {
+            background: rgba(70, 70, 70, 0.7);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .grid-item.assigned {
+            background: rgba(0, 120, 212, 0.15);
+            border: 2px solid var(--primary);
+        }
+
+        .grid-item.playing {
+            background: rgba(255, 185, 0, 0.15);
+            border: 2px solid var(--accent);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 185, 0, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(255, 185, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 185, 0, 0); }
+        }
+
+        .grid-item-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .grid-item.assigned .grid-item-icon {
+            color: var(--accent);
+        }
+
+        .grid-item-title {
+            font-weight: 500;
+            font-size: 16px;
+            text-align: center;
+            padding: 0 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .grid-item-empty {
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        .grid-item-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .grid-item:hover .grid-item-remove {
+            opacity: 1;
+        }
+
+        .visualizer-container {
+            height: 150px;
+            background: rgba(20, 20, 20, 0.7);
+            border-radius: 8px;
+            margin-top: 25px;
+            padding: 15px;
+        }
+
+        .visualizer-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #waveform {
+            width: 100%;
+            height: 100px;
+        }
+
+        .visualizer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .visualizer-btn {
+            background: transparent;
+            border: none;
+            color: var(--light);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visualizer-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .drop-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 120, 212, 0.3);
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .grid-item.drag-over .drop-overlay {
+            opacity: 1;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .theme-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .theme-option.active {
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        .theme-1 { background: linear-gradient(135deg, #0078d4, #00bcf2); }
+        .theme-2 { background: linear-gradient(135deg, #ffb900, #ff8c00); }
+        .theme-3 { background: linear-gradient(135deg, #107c10, #00cc6a); }
+        .theme-4 { background: linear-gradient(135deg, #e81123, #ec008c); }
+
+        .status-bar {
+            grid-column: 1 / -1;
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 8px;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--secondary);
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+        }
+
+        .modal-input {
+            width: 100%;
+            background: rgba(50, 50, 50, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 250px 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;
+                height: auto;
+            }
+            
+            .sidebar {
+                height: auto;
+            }
+            
+            .soundboard-grid {
+                min-height: 500px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .soundboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .grid-controls {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-wave-square"></i>
+                <h1>Professional Soundboard Creator</h1>
+            </div>
+            <div class="controls">
+                <button class="btn" id="newBoardBtn">
+                    <i class="fas fa-plus"></i> New Board
+                </button>
+                <button class="btn btn-success" id="saveBoardBtn">
+                    <i class="fas fa-save"></i> Save Layout
+                </button>
+                <button class="btn btn-secondary" id="loadBoardBtn">
+                    <i class="fas fa-folder-open"></i> Load Layout
+                </button>
+                <button class="btn btn-danger" id="clearBoardBtn">
+                    <i class="fas fa-trash"></i> Clear Board
+                </button>
+            </div>
+        </header>
+
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h2 class="sidebar-title">
+                    <i class="fas fa-file-upload"></i> Upload Sounds
+                </h2>
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop audio files here</p>
+                    <p class="small">or click to browse (MP3, WAV, OGG)</p>
+                </div>
+                <input type="file" id="fileInput" accept="audio/*" multiple style="display: none;">
+            </div>
+
+            <div class="sidebar-section">
+                <h2 class="sidebar-title">
+                    <i class="fas fa-music"></i> Sound Library
+                </h2>
+                <div class="library" id="soundLibrary">
+                    <!-- Sound items will be added here dynamically -->
+                    <div class="library-item">
+                        <div class="library-item-icon">
+                            <i class="fas fa-drum"></i>
+                        </div>
+                        <div class="library-item-content">
+                            <div class="library-item-title">Drum Beat</div>
+                            <div class="library-item-duration">0:05</div>
+                        </div>
+                    </div>
+                    <div class="library-item">
+                        <div class="library-item-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="library-item-content">
+                            <div class="library-item-title">Notification</div>
+                            <div class="library-item-duration">0:02</div>
+                        </div>
+                    </div>
+                    <div class="library-item">
+                        <div class="library-item-icon">
+                            <i class="fas fa-laugh"></i>
+                        </div>
+                        <div class="library-item-content">
+                            <div class="library-item-title">Applause</div>
+                            <div class="library-item-duration">0:08</div>
+                        </div>
+                    </div>
+                    <div class="library-item">
+                        <div class="library-item-icon">
+                            <i class="fas fa-car-crash"></i>
+                        </div>
+                        <div class="library-item-content">
+                            <div class="library-item-title">Car Horn</div>
+                            <div class="library-item-duration">0:03</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h2 class="sidebar-title">
+                    <i class="fas fa-palette"></i> Theme
+                </h2>
+                <div class="theme-selector">
+                    <div class="theme-option theme-1 active" data-theme="1"></div>
+                    <div class="theme-option theme-2" data-theme="2"></div>
+                    <div class="theme-option theme-3" data-theme="3"></div>
+                    <div class="theme-option theme-4" data-theme="4"></div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="soundboard-container">
+            <div class="grid-controls">
+                <div class="grid-size-controls">
+                    <span class="grid-label">Grid Size:</span>
+                    <input type="number" class="grid-input" id="gridRows" min="2" max="8" value="4">
+                    <span>x</span>
+                    <input type="number" class="grid-input" id="gridCols" min="2" max="8" value="4">
+                </div>
+                <button class="btn btn-secondary" id="applyGridBtn">
+                    <i class="fas fa-sync-alt"></i> Apply Grid
+                </button>
+            </div>
+
+            <div class="soundboard-grid" id="soundboardGrid">
+                <!-- Grid items will be generated here dynamically -->
+            </div>
+
+            <div class="visualizer-container">
+                <h3 class="visualizer-title">
+                    <i class="fas fa-waveform"></i> Audio Visualizer
+                </h3>
+                <div id="waveform"></div>
+                <div class="visualizer-controls">
+                    <button class="visualizer-btn" id="playBtn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="visualizer-btn" id="pauseBtn">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <button class="visualizer-btn" id="stopBtn">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                    <button class="visualizer-btn" id="volumeDownBtn">
+                        <i class="fas fa-volume-down"></i>
+                    </button>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.7">
+                    <button class="visualizer-btn" id="volumeUpBtn">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="status-bar">
+            <div class="status-item">
+                <i class="fas fa-microphone"></i>
+                <span>Ready to create your soundboard</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-database"></i>
+                <span>Local Storage: 12.5MB available</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-info-circle"></i>
+                <span>Drag sounds from library to grid to assign</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Save Board Modal -->
+    <div class="modal" id="saveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Save Soundboard</h3>
+                <button class="modal-close" id="saveModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="modal-input" id="boardName" placeholder="Enter board name">
+                <p>Your soundboard layout will be saved to browser storage.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="saveModalCancel">Cancel</button>
+                <button class="btn btn-success" id="saveModalConfirm">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Wavesurfer for audio visualization
+            const wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                waveColor: '#0078d4',
+                progressColor: '#ffb900',
+                barWidth: 3,
+                barGap: 2,
+                barRadius: 3,
+                cursorWidth: 2,
+                cursorColor: '#ffb900',
+                height: 100,
+                normalize: true,
+                responsive: true,
+                backend: 'WebAudio'
+            });
+
+            // Sample sounds data (in a real app, this would come from uploaded files)
+            const sampleSounds = [
+                { id: 1, name: "Drum Beat", icon: "drum", duration: "0:05", color: "#0078d4" },
+                { id: 2, name: "Notification", icon: "bell", duration: "0:02", color: "#ffb900" },
+                { id: 3, name: "Applause", icon: "laugh", duration: "0:08", color: "#107c10" },
+                { id: 4, name: "Car Horn", icon: "car-crash", duration: "0:03", color: "#e81123" }
+            ];
+
+            // Initialize soundboard grid
+            let gridRows = 4;
+            let gridCols = 4;
+            let currentBoard = {};
+            let selectedSound = null;
+            let currentTheme = '1';
+
+            // DOM Elements
+            const soundboardGrid = document.getElementById('soundboardGrid');
+            const soundLibrary = document.getElementById('soundLibrary');
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const gridRowsInput = document.getElementById('gridRows');
+            const gridColsInput = document.getElementById('gridCols');
+            const applyGridBtn = document.getElementById('applyGridBtn');
+            const saveBoardBtn = document.getElementById('saveBoardBtn');
+            const clearBoardBtn = document.getElementById('clearBoardBtn');
+            const saveModal = document.getElementById('saveModal');
+            const saveModalClose = document.getElementById('saveModalClose');
+            const saveModalCancel = document.getElementById('saveModalCancel');
+            const saveModalConfirm = document.getElementById('saveModalConfirm');
+            const themeOptions = document.querySelectorAll('.theme-option');
+            const volumeSlider = document.getElementById('volumeSlider');
+
+            // Initialize the soundboard
+            function initSoundboard() {
+                createGrid();
+                populateSoundLibrary();
+                setupEventListeners();
+                loadSampleBoard();
+            }
+
+            // Create the grid based on rows and columns
+            function createGrid() {
+                soundboardGrid.innerHTML = '';
+                soundboardGrid.style.gridTemplateColumns = `repeat(${gridCols}, 1fr)`;
+                soundboardGrid.style.gridTemplateRows = `repeat(${gridRows}, 1fr)`;
+                
+                for (let i = 0; i < gridRows * gridCols; i++) {
+                    const gridItem = document.createElement('div');
+                    gridItem.className = 'grid-item';
+                    gridItem.dataset.index = i;
+                    
+                    gridItem.innerHTML = `
+                        <i class="fas fa-plus grid-item-icon"></i>
+                        <div class="grid-item-title grid-item-empty">Empty Slot</div>
+                        <div class="grid-item-remove"><i class="fas fa-times"></i></div>
+                        <div class="drop-overlay"><i class="fas fa-music"></i></div>
+                    `;
+                    
+                    soundboardGrid.appendChild(gridItem);
+                }
+            }
+
+            // Populate the sound library with sample sounds
+            function populateSoundLibrary() {
+                // Clear existing items except the sample ones
+                const existingItems = soundLibrary.querySelectorAll('.library-item');
+                if (existingItems.length > sampleSounds.length) {
+                    for (let i = sampleSounds.length; i < existingItems.length; i++) {
+                        existingItems[i].remove();
+                    }
+                }
+                
+                // Add sample sounds if not already present
+                sampleSounds.forEach((sound, index) => {
+                    if (index >= existingItems.length) {
+                        const soundItem = document.createElement('div');
+                        soundItem.className = 'library-item';
+                        soundItem.dataset.soundId = sound.id;
+                        soundItem.dataset.name = sound.name;
+                        
+                        soundItem.innerHTML = `
+                            <div class="library-item-icon" style="background: ${sound.color}">
+                                <i class="fas fa-${sound.icon}"></i>
+                            </div>
+                            <div class="library-item-content">
+                                <div class="library-item-title">${sound.name}</div>
+                                <div class="library-item-duration">${sound.duration}</div>
+                            </div>
+                        `;
+                        
+                        soundLibrary.appendChild(soundItem);
+                    }
+                });
+            }
+
+            // Load a sample board for demonstration
+            function loadSampleBoard() {
+                const gridItems = soundboardGrid.querySelectorAll('.grid-item');
+                
+                if (gridItems.length >= 4) {
+                    assignSoundToGrid(gridItems[0], sampleSounds[0]);
+                    assignSoundToGrid(gridItems[1], sampleSounds[1]);
+                    assignSoundToGrid(gridItems[4], sampleSounds[2]);
+                    assignSoundToGrid(gridItems[5], sampleSounds[3]);
+                }
+            }
+
+            // Assign a sound to a grid item
+            function assignSoundToGrid(gridItem, sound) {
+                gridItem.classList.add('assigned');
+                gridItem.querySelector('.grid-item-icon').className = `fas fa-${sound.icon} grid-item-icon`;
+                gridItem.querySelector('.grid-item-title').textContent = sound.name;
+                gridItem.querySelector('.grid-item-title').classList.remove('grid-item-empty');
+                gridItem.dataset.soundId = sound.id;
+                
+                // Store assignment in board state
+                const index = parseInt(gridItem.dataset.index);
+                currentBoard[index] = {
+                    soundId: sound.id,
+                    name: sound.name,
+                    icon: sound.icon,
+                    color: sound.color
+                };
+            }
+
+            // Setup all event listeners
+            function setupEventListeners() {
+                // File upload
+                uploadArea.addEventListener('click', () => fileInput.click());
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '#0078d4';
+                    uploadArea.style.backgroundColor = 'rgba(0, 120, 212, 0.1)';
+                });
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.style.borderColor = '';
+                    uploadArea.style.backgroundColor = '';
+                });
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '';
+                    uploadArea.style.backgroundColor = '';
+                    
+                    if (e.dataTransfer.files.length > 0) {
+                        handleFileUpload(e.dataTransfer.files);
+                    }
+                });
+                fileInput.addEventListener('change', () => {
+                    if (fileInput.files.length > 0) {
+                        handleFileUpload(fileInput.files);
+                    }
+                });
+
+                // Sound library interactions
+                soundLibrary.addEventListener('click', (e) => {
+                    const soundItem = e.target.closest('.library-item');
+                    if (soundItem) {
+                        document.querySelectorAll('.library-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        soundItem.classList.add('active');
+                        selectedSound = soundItem.dataset.soundId;
+                    }
+                });
+
+                // Grid interactions
+                soundboardGrid.addEventListener('click', (e) => {
+                    const gridItem = e.target.closest('.grid-item');
+                    const removeBtn = e.target.closest('.grid-item-remove');
+                    
+                    if (removeBtn) {
+                        const gridItem = removeBtn.closest('.grid-item');
+                        clearGridItem(gridItem);
+                        return;
+                    }
+                    
+                    if (gridItem && selectedSound) {
+                        const soundId = selectedSound;
+                        const sound = sampleSounds.find(s => s.id == soundId) || 
+                                     { id: soundId, name: "Custom Sound", icon: "music", color: "#8a8886" };
+                        assignSoundToGrid(gridItem, sound);
+                        
+                        // Visual feedback for playing sound
+                        gridItem.classList.add('playing');
+                        setTimeout(() => {
+                            gridItem.classList.remove('playing');
+                        }, 1000);
+                    }
+                });
+
+                // Drag and drop
+                soundLibrary.addEventListener('dragstart', (e) => {
+                    const soundItem = e.target.closest('.library-item');
+                    if (soundItem) {
+                        e.dataTransfer.setData('soundId', soundItem.dataset.soundId);
+                        e.dataTransfer.setData('soundName', soundItem.dataset.name);
+                        soundItem.classList.add('dragging');
+                    }
+                });
+
+                soundLibrary.addEventListener('dragend', (e) => {
+                    const soundItem = e.target.closest('.library-item');
+                    if (soundItem) {
+                        soundItem.classList.remove('dragging');
+                    }
+                });
+
+                soundboardGrid.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const gridItem = e.target.closest('.grid-item');
+                    if (gridItem) {
+                        gridItem.classList.add('drag-over');
+                    }
+                });
+
+                soundboardGrid.addEventListener('dragleave', (e) => {
+                    const gridItem = e.target.closest('.grid-item');
+                    if (gridItem) {
+                        gridItem.classList.remove('drag-over');
+                    }
+                });
+
+                soundboardGrid.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const gridItem = e.target.closest('.grid-item');
+                    if (gridItem) {
+                        gridItem.classList.remove('drag-over');
+                        
+                        const soundId = e.dataTransfer.getData('soundId');
+                        const soundName = e.dataTransfer.getData('soundName');
+                        const sound = sampleSounds.find(s => s.id == soundId) || 
+                                     { id: soundId, name: soundName, icon: "music", color: "#8a8886" };
+                        
+                        assignSoundToGrid(gridItem, sound);
+                        
+                        // Visual feedback for playing sound
+                        gridItem.classList.add('playing');
+                        setTimeout(() => {
+                            gridItem.classList.remove('playing');
+                        }, 1000);
+                    }
+                });
+
+                // Grid controls
+                applyGridBtn.addEventListener('click', () => {
+                    gridRows = parseInt(gridRowsInput.value) || 4;
+                    gridCols = parseInt(gridColsInput.value) || 4;
+                    
+                    if (gridRows < 2) gridRows = 2;
+                    if (gridRows > 8) gridRows = 8;
+                    if (gridCols < 2) gridCols = 2;
+                    if (gridCols > 8) gridCols = 8;
+                    
+                    gridRowsInput.value = gridRows;
+                    gridColsInput.value = gridCols;
+                    
+                    createGrid();
+                    restoreBoardState();
+                });
+
+                // Board controls
+                saveBoardBtn.addEventListener('click', () => {
+                    saveModal.classList.add('active');
+                });
+
+                saveModalClose.addEventListener('click', () => {
+                    saveModal.classList.remove('active');
+                });
+
+                saveModalCancel.addEventListener('click', () => {
+                    saveModal.classList.remove('active');
+                });
+
+                saveModalConfirm.addEventListener('click', () => {
+                    const boardName = document.getElementById('boardName').value || 'My Soundboard';
+                    // In a real app, save to localStorage or database
+                    alert(`"${boardName}" layout saved successfully!`);
+                    saveModal.classList.remove('active');
+                });
+
+                clearBoardBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to clear the entire board?')) {
+                        currentBoard = {};
+                        const gridItems = soundboardGrid.querySelectorAll('.grid-item');
+                        gridItems.forEach(item => {
+                            clearGridItem(item);
+                        });
+                    }
+                });
+
+                // Theme selector
+                themeOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        themeOptions.forEach(opt => opt.classList.remove('active'));
+                        option.classList.add('active');
+                        currentTheme = option.dataset.theme;
+                        applyTheme(currentTheme);
+                    });
+                });
+
+                // Volume control
+                volumeSlider.addEventListener('input', (e) => {
+                    wavesurfer.setVolume(e.target.value);
+                });
+            }
+
+            // Clear a grid item
+            function clearGridItem(gridItem) {
+                gridItem.classList.remove('assigned');
+                gridItem.querySelector('.grid-item-icon').className = 'fas fa-plus grid-item-icon';
+                gridItem.querySelector('.grid-item-title').textContent = 'Empty Slot';
+                gridItem.querySelector('.grid-item-title').classList.add('grid-item-empty');
+                
+                // Remove from board state
+                const index = parseInt(gridItem.dataset.index);
+                delete currentBoard[index];
+            }
+
+            // Restore board state after grid change
+            function restoreBoardState() {
+                const gridItems = soundboardGrid.querySelectorAll('.grid-item');
+                
+                gridItems.forEach(item => {
+                    const index = parseInt(item.dataset.index);
+                    if (currentBoard[index]) {
+                        const sound = currentBoard[index];
+                        assignSoundToGrid(item, sound);
+                    }
+                });
+            }
+
+            // Handle file uploads
+            function handleFileUpload(files) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith('audio/')) {
+                        // In a real app, process and add to library
+                        const fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
+                        
+                        const soundItem = document.createElement('div');
+                        soundItem.className = 'library-item';
+                        soundItem.dataset.soundId = `custom-${Date.now()}`;
+                        soundItem.dataset.name = fileName;
+                        
+                        soundItem.innerHTML = `
+                            <div class="library-item-icon" style="background: #8a8886">
+                                <i class="fas fa-file-audio"></i>
+                            </div>
+                            <div class="library-item-content">
+                                <div class="library-item-title">${fileName}</div>
+                                <div class="library-item-duration">Uploaded</div>
+                            </div>
+                        `;
+                        
+                        soundLibrary.appendChild(soundItem);
+                    }
+                }
+            }
+
+            // Apply theme
+            function applyTheme(theme) {
+                const root = document.documentElement;
+                
+                switch(theme) {
+                    case '1': // Blue theme
+                        root.style.setProperty('--primary', '#0078d4');
+                        root.style.setProperty('--primary-dark', '#106ebe');
+                        root.style.setProperty('--accent', '#ffb900');
+                        break;
+                    case '2': // Orange theme
+                        root.style.setProperty('--primary', '#ff8c00');
+                        root.style.setProperty('--primary-dark', '#e67600');
+                        root.style.setProperty('--accent', '#00bcf2');
+                        break;
+                    case '3': // Green theme
+                        root.style.setProperty('--primary', '#107c10');
+                        root.style.setProperty('--primary-dark', '#0e6e0e');
+                        root.style.setProperty('--accent', '#00cc6a');
+                        break;
+                    case '4': // Red theme
+                        root.style.setProperty('--primary', '#e81123');
+                        root.style.setProperty('--primary-dark', '#c12a2e');
+                        root.style.setProperty('--accent', '#ec008c');
+                        break;
+                }
+            }
+
+            // Initialize the application
+            initSoundboard();
+            
+            // Load a sample audio for visualization
+            wavesurfer.load('https://www.mfiles.co.uk/mp3-downloads/brahms-st-anthony-chorale-theme-two-pianos.mp3');
+            
+            // Audio control buttons
+            document.getElementById('playBtn').addEventListener('click', () => wavesurfer.play());
+            document.getElementById('pauseBtn').addEventListener('click', () => wavesurfer.pause());
+            document.getElementById('stopBtn').addEventListener('click', () => wavesurfer.stop());
+            document.getElementById('volumeDownBtn').addEventListener('click', () => {
+                volumeSlider.value = Math.max(0, volumeSlider.value - 0.1);
+                wavesurfer.setVolume(volumeSlider.value);
+            });
+            document.getElementById('volumeUpBtn').addEventListener('click', () => {
+                volumeSlider.value = Math.min(1, parseFloat(volumeSlider.value) + 0.1);
+                wavesurfer.setVolume(volumeSlider.value);
+            });
+        });
+    </script>
+</body>
+</html>
