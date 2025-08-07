@@ -21,4 +21,3 @@ Just open any `.html` file in your browser — no dependencies or installations 
 
 ---
 
-## 📁 Folder Structure
